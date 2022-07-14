@@ -1,9 +1,13 @@
 <?php
 
+use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\TransactionController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,6 +24,15 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::apiResource('categories', CategoryController::class);
+Route::group(['middleware' => 'auth:sanctum'], function () {
+    Route::apiResource('categories', CategoryController::class); 
+    Route::apiResource('transactions', TransactionController::class);
+});
 
-Route::apiResource('transactions', TransactionController::class);
+Route::group(['prefix' => 'auth'], function () {
+    Route::group(['middleware' => 'guest'], function () {
+        Route::post('login', [AuthController::class, 'login']);
+        Route::post('register', [AuthController::class, 'register']);
+    });
+    Route::post('logout', [AuthController::class, 'logout']);
+});

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreTransactionRequest;
 use App\Models\Transaction;
 use App\Http\Resources\TransactionResource;
 use Illuminate\Http\Request;
@@ -25,9 +26,11 @@ class TransactionController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreTransactionRequest $request)
     {
-        //
+        $category = auth()->user()->transactions()->create($request->validated());
+        
+        return TransactionResource::make($category);
     }
 
     /**
